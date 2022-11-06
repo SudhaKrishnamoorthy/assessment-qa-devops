@@ -1,6 +1,7 @@
 const express = require('express')
 const cors = require('cors')
 const path = require('path')
+//const Rollbar = require("rollbar")
 const app = express()
 const {bots, playerRecord} = require('./data')
 const {shuffleArray} = require('./utils')
@@ -8,9 +9,32 @@ const {shuffleArray} = require('./utils')
 app.use(cors())
 app.use(express.json())
 
-app.use(express.static(path.join(__dirname, '../public')))
+// include and initialize the rollbar library with your access token
+var Rollbar = require("rollbar");
+var rollbar = new Rollbar({
+  accessToken: '70cb5e6d5e0b4952aeabab31264838b7',
+  captureUncaught: true,
+  captureUnhandledRejections: true
+});
+
+// record a generic message and send it to Rollbar
+rollbar.log("Hello world!");
+
+
+
+app.use(express.static(path.join(__dirname, "./public")));
+app.use('/styles', express.static(path.join(__dirname, "./public/index.css")));
+app.use('/js', express.static(path.join(__dirname, "./public/index.js")));
+//app.use(express.static(path.join(__dirname, '../public/index.html')))
+//app.get("/", function(req, res) {
+ //   res.sendFile(path.join(__dirname, "/../public"))
+//})
+//app.use("/styles", function(req, res) {
+ //   res.sendFile(path.join(__dirname, "../public"))
+//})
 
 app.get('/api/robots', (req, res) => {
+    rollbar.info("robots listed sucessfully")
     try {
         res.status(200).send(botsArr)
     } catch (error) {
@@ -20,6 +44,7 @@ app.get('/api/robots', (req, res) => {
 })
 
 app.get('/api/robots/five', (req, res) => {
+    rollbar.info("5 random ronots listed")
     try {
         let shuffled = shuffleArray(bots)
         let choices = shuffled.slice(0, 5)
@@ -70,7 +95,7 @@ app.get('/api/player', (req, res) => {
         res.sendStatus(400)
     }
 })
-
+app.use(rollbar.errorHandler())
 const port = process.env.PORT || 3000
 
 app.listen(port, () => {
