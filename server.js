@@ -44,7 +44,7 @@ app.get('/api/robots', (req, res) => {
 })
 
 app.get('/api/robots/five', (req, res) => {
-    rollbar.info("5 random ronots listed")
+    rollbar.info("5 random robots listed")
     try {
         let shuffled = shuffleArray(bots)
         let choices = shuffled.slice(0, 5)
@@ -57,6 +57,7 @@ app.get('/api/robots/five', (req, res) => {
 })
 
 app.post('/api/duel', (req, res) => {
+    rollbar.info("calculating winner")
     try {
         // getting the duos from the front end
         let {compDuo, playerDuo} = req.body
@@ -88,6 +89,7 @@ app.post('/api/duel', (req, res) => {
 })
 
 app.get('/api/player', (req, res) => {
+    rollbar.info("player stats listed")
     try {
         res.status(200).send(playerRecord)
     } catch (error) {
